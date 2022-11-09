@@ -55,7 +55,12 @@ class ImportScripts::FLARUM < ImportScripts::Base
           name: user['username'],
           created_at: user['joined_at'],
           last_seen_at: user['last_seen_at'],
-          avatar_url: user['avatar_url']
+          post_create_action: proc do |newuser|
+            avatar = user["avatar_url"]
+            if !avatar.nil?
+                @uploader.create_avatar(newuser, avatar)
+            end
+          end
         }
       end
     end
@@ -151,6 +156,8 @@ class ImportScripts::FLARUM < ImportScripts::Base
 
   def process_FLARUM_post(raw, import_id)
     s = raw.dup
+
+    s = CGI.unescapeHTML(s)
 
     s
   end
