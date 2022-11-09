@@ -58,7 +58,8 @@ class ImportScripts::FLARUM < ImportScripts::Base
           post_create_action: proc do |newuser|
             avatar = user["avatar_url"]
             if !avatar.nil?
-                @uploader.create_avatar(newuser, avatar)
+                filename = File.join("/shared/import/data", avatar)
+                @uploader.create_avatar(newuser, filename)
             end
           end
         }
