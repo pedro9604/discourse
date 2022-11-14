@@ -159,6 +159,22 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s = raw.dup
 
     s = CGI.unescapeHTML(s)
+    
+    s.gsub!(/\[\/?i\]/, "")
+    s.gsub!(/\[\/?b\]/, "")
+    s.gsub!(/\[\/?u\]/, "")
+    s.gsub!(/\[\/?s\]/, "")
+    s.gsub!(/\[\/?center\]/, "")
+    s.gsub!(/\[\/?left\]/, "")
+    s.gsub!(/\[\/?right\]/, "")
+    s.gsub!(/\[\/?code\]/, "")
+    s.gsub!(/\[\/?pre\]/, "")
+
+    s.gsub!(/\[size=.*?\](.*?)\[\/size\]/, "")
+    s.gsub!(/\[color=.*?\](.*?)\[\/color\]/, "")
+
+    s.gsub!(/\[\/?quote\]/, "")
+    s.gsub!(/\<QUOTE\>/, "[quote]").gsub!(/\<\/QUOTE\>/, "[/quote]")
 
     s
   end
