@@ -169,6 +169,7 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s.gsub!(/\[\/?right\]/, "")
     s.gsub!(/\[\/?code\]/, "")
     s.gsub!(/\[\/?pre\]/, "")
+    s.gsub!(/\[\/?youtube\]/, "")
 
     s.gsub!(/\[size=.*?\](.*?)\[\/size\]/, "")
     s.gsub!(/\[color=.*?\](.*?)\[\/color\]/, "")
