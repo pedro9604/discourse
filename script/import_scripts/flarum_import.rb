@@ -175,7 +175,8 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s.gsub!(/\[color=.*?\](.*?)\[\/color\]/, "")
 
     s.gsub!(/\[\/?quote\]/, "")
-    s.gsub!(/\<QUOTE\>/, "[quote]").gsub!(/\<\/QUOTE\>/, "[/quote]")
+    s.gsub!(/\<QUOTE\>/, "[quote]")
+    s.gsub!(/\<\/QUOTE\>/, "[/quote]")
 
     s
   end
