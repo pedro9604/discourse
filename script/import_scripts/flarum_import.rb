@@ -159,7 +159,10 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s = raw.dup
 
     s = CGI.unescapeHTML(s)
-    
+    #<s></s> and <e></e> present in every bbcode tag
+    s.gsub!(/\<\/?s\>/, "")
+    s.gsub!(/\<\/?e\>/, "")
+
     s.gsub!(/\[\/?i\]/, "")
     s.gsub!(/\[\/?b\]/, "")
     s.gsub!(/\[\/?u\]/, "")
@@ -167,16 +170,33 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s.gsub!(/\[\/?center\]/, "")
     s.gsub!(/\[\/?left\]/, "")
     s.gsub!(/\[\/?right\]/, "")
-    s.gsub!(/\[\/?code\]/, "")
-    s.gsub!(/\[\/?pre\]/, "")
     s.gsub!(/\[\/?youtube\]/, "")
 
     s.gsub!(/\[size=.*?\](.*?)\[\/size\]/, "")
     s.gsub!(/\[color=.*?\](.*?)\[\/color\]/, "")
 
+    #<H3>
+    s.gsub!(/#{3}/, "")
+    #Strong
+    s.gsub!(/\*{2}/, "")
+
+    #Lists
+    s.gsub!(/\[ul\]/, "-")
+    s.gsub!(/\[\/ul\]/, "")
+    s.gsub!(/\[li\]/, "-")
+    s.gsub!(/\[\/li\]/, "")
+
     s.gsub!(/\[\/?quote\]/, "")
     s.gsub!(/\<QUOTE\>/, "[quote]")
     s.gsub!(/\<\/QUOTE\>/, "[/quote]")
+
+
+    s.gsub!(/\[\/?code\]/, "")
+    s.gsub!(/\<C\>/, "<CODE>")
+    s.gsub!(/\<\/C\>/, "</CODE>")
+
+    s.gsub!(/\[pre\]/, "<pre>")
+    s.gsub!(/\[\/pre\]/, "</pre>")
 
     s
   end
