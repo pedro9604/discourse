@@ -71,7 +71,7 @@ class ImportScripts::FLARUM < ImportScripts::Base
     puts "", "importing top level categories..."
 
     categories = mysql_query("
-                              SELECT id, name, description, position
+                              SELECT id, name, description, position, slug
                               FROM tags
                               ORDER BY position ASC
                             ").to_a
@@ -79,14 +79,17 @@ class ImportScripts::FLARUM < ImportScripts::Base
     create_categories(categories) do |category|
       {
         id: category["id"],
-        name: category["name"]
+        name: category["name"],
+        post_create_action: proc do |category|
+          Permalink.create(url: "/t/#{category["slug"]}", category_id: category["id"])
+        end,
       }
     end
 
     puts "", "importing children categories..."
 
     children_categories = mysql_query("
-                                       SELECT id, name, description, position
+                                       SELECT id, name, description, position, slug
                                        FROM tags
                                        ORDER BY position
                                       ").to_a
@@ -96,6 +99,10 @@ class ImportScripts::FLARUM < ImportScripts::Base
         id: "child##{category['id']}",
         name: category["name"],
         description: category["description"],
+        post_create_action: proc do |category|
+          url = "/t/#{category["slug"]}"
+          Permalink.create(url: url, category_id: "child##{category['id']}") unless Permalink.find_by(url: url)
+        end,
       }
     end
   end
@@ -111,6 +118,7 @@ class ImportScripts::FLARUM < ImportScripts::Base
                d.id topic_id,
                d.title title,
                d.first_post_id first_post_id,
+               d.slug slug,
                p.user_id user_id,
                p.content raw,
                p.created_at created_at,
@@ -140,10 +148,14 @@ class ImportScripts::FLARUM < ImportScripts::Base
         if m['id'] == m['first_post_id']
           mapped[:category] = category_id_from_imported_category_id("child##{m['category_id']}")
           mapped[:title] = CGI.unescapeHTML(m['title'])
+          mapped[:post_create_action] = proc do |post|
+            Permalink.create(url: "/d/#{m['topic_id']}-#{m['slug']}", topic_id: m['topic_id'])
         else
           parent = topic_lookup_from_imported_post_id(m['first_post_id'])
           if parent
             mapped[:topic_id] = parent[:topic_id]
+            mapped[:post_create_action] = proc do |post|
+              Permalink.create(url: "/d/#{m['topic_id']}-#{m['slug']}/#{m['id']}", post_id: m['id'])
           else
             puts "Parent post #{m['first_post_id']} doesn't exist. Skipping #{m["id"]}: #{m["title"][0..40]}"
             skip = true
