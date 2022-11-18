@@ -150,12 +150,14 @@ class ImportScripts::FLARUM < ImportScripts::Base
           mapped[:title] = CGI.unescapeHTML(m['title'])
           mapped[:post_create_action] = proc do |post|
             Permalink.create(url: "/d/#{m['topic_id']}-#{m['slug']}", topic_id: m['topic_id'])
+          end
         else
           parent = topic_lookup_from_imported_post_id(m['first_post_id'])
           if parent
             mapped[:topic_id] = parent[:topic_id]
             mapped[:post_create_action] = proc do |post|
               Permalink.create(url: "/d/#{m['topic_id']}-#{m['slug']}/#{m['id']}", post_id: m['id'])
+            end  
           else
             puts "Parent post #{m['first_post_id']} doesn't exist. Skipping #{m["id"]}: #{m["title"][0..40]}"
             skip = true
