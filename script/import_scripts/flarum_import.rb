@@ -190,7 +190,7 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s.gsub!(/\[color=.*?\](.*?)\[\/color\]/, "")
 
     #<H3>
-    s.gsub!(/#{3}/, "")
+    s.gsub!(/\#{3}/, "")
     #Strong
     s.gsub!(/\*{2}/, "")
 
@@ -199,6 +199,7 @@ class ImportScripts::FLARUM < ImportScripts::Base
     s.gsub!(/\[\/ul\]/, "")
     s.gsub!(/\[li\]/, "-")
     s.gsub!(/\[\/li\]/, "")
+    s.gsub!(/\<LI\>-/, "<LI>")
 
     s.gsub!(/\[\/?quote\]/, "")
     s.gsub!(/\<QUOTE\>/, "[quote]")
